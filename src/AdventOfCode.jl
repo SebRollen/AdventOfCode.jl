@@ -21,13 +21,12 @@ function _download_data(year, day)
 end
 
 function template(year, day)
-    dir_path = @__DIR__
-    data_path = normpath(dir_path * "/../data/$year/day_$day.txt")
+    data_path = normpath(pwd() * "data/$year/day_$day.txt")
     """
     # $(_base_url(year, day))
     using AdventOfCode
 
-    input = readlines("$data_path")
+    input = readlines("data/$year/day_$day.txt")
 
     function part_1(input)
         nothing
