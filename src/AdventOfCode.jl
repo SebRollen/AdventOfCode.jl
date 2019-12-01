@@ -1,6 +1,6 @@
 module AdventOfCode
 
-using HTTP, Gumbo, JSON, Dates
+using HTTP, Gumbo, JSON, Dates, AbstractTrees
 export setup_files, submit_answer
 
 _base_url(year, day) = "https://adventofcode.com/$year/day/$day"
@@ -60,7 +60,7 @@ function _is_unlocked(year, day)
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
-    is_unlocked = current_date > Date(year, 12, day)
+    is_unlocked = current_date >= Date(year, 12, day)
     if !is_unlocked
         @warn "Advent of Code for year $year and day $day hasn't unlocked yet."
     end
@@ -81,11 +81,36 @@ function setup_files(year, day; force = false)
     end
 end
 
+function _parse_submission_result(result)
+    tree = PostOrderDFS(Gumbo.parsehtml(String(result.body)).root)
+    for elem in tree
+        if typeof(elem) <: HTMLText
+            if occursin(r"That's the right answer", text(elem))
+                @info "Correct answer!"
+                return nothing
+            elseif occursin(r"Did you already complete it", text(elem))
+                @warn "Questions already completed"
+                return nothing
+            elseif occursin(r"That's not the right answer", text(elem))
+                @warn "Wrong answer"
+                return nothing
+            elseif occursin(r"You gave an answer too recently", text(elem))
+                @warn "You need to wait to submit another answer"
+                return nothing
+            elseif occursin(r"Both parts of this puzzle are complete", text(elem))
+                @info "You already solved this day's puzzles"
+                return nothing
+            end
+        end
+    end
+    error("Didn't find one of the possible branches")
+end
+
 function submit_answer(year, day, part, answer)
     data = Dict(
         "level" => part,
         "answer" => answer
     )
-    result = HTTP.post(_base_url(year, day) * "/answer", Dict("User-Agent" => "AdventOfCode.jl"), JSON.json(data), cookies = _get_cookies())
+    result = HTTP.post(_base_url(year, day), Dict("User-Agent" => "AdventOfCode.jl"), JSON.json(data), cookies = _get_cookies())
 end
 end
