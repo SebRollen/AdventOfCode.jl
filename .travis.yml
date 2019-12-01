@@ -9,7 +9,3 @@ julia:
   - nightly
 notifications:
   email: false
-after_success:
-  # push coverage results to Codecov
-  - julia --project=test/coverage -e 'using Pkg; Pkg.instantiate();
-        using Coverage; Codecov.submit(Codecov.process_folder())';
