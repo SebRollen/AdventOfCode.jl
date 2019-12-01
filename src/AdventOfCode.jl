@@ -45,7 +45,7 @@ function _setup_data_file(year, day)
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
-    if current_date < Date(year, 12, day)
+    if current_date <= Date(year, 12, day)
         @warn "AdventOfCode for year $year, day $day hasn't been unlocked yet."
     else
         data = _download_data(year, day)
