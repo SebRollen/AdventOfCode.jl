@@ -42,7 +42,7 @@ function template(year, day)
 end
 
 function _setup_data_file(year, day)
-    data_path = joinpath(@__DIR__, "../data/$year/day_$day.txt")
+    data_path = joinpath(pwd(), "data/$year/day_$day.txt")
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
@@ -50,6 +50,7 @@ function _setup_data_file(year, day)
         @warn "AdventOfCode for year $year, day $day hasn't been unlocked yet."
     else
         data = _download_data(year, day)
+        mkpath(splitdir(data_path)[1])
         open(data_path, "w+") do io
             write(io, data)
         end
@@ -69,11 +70,12 @@ end
 
 function setup_files(year, day; force = false)
     is_unlocked = _is_unlocked(year, day)
-    code_path = joinpath(@__DIR__, "$year/day_$day.jl")
+    code_path = joinpath(pwd(), "src/$year/day_$day.jl")
     is_unlocked && _setup_data_file(year, day)
     if !force && isfile(code_path)
         @warn "$code_path already exists. To overwrite, re-run with `force=true`"
     else
+        mkpath(splitdir(code_path)[1])
         open(code_path, "w+") do io
             write(io, template(year, day))
         end
