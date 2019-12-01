@@ -20,7 +20,7 @@ function _download_data(year, day)
     error("Unable to download data")
 end
 
-function template(year, day)
+function _template(year, day)
     data_path = normpath(pwd() * "data/$year/day_$day.txt")
     """
     # $(_base_url(year, day))
@@ -76,7 +76,7 @@ function setup_files(year, day; force = false)
     else
         mkpath(splitdir(code_path)[1])
         open(code_path, "w+") do io
-            write(io, template(year, day))
+            write(io, _template(year, day))
         end
     end
 end
