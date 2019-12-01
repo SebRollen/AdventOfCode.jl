@@ -1,7 +1,7 @@
 module AdventOfCode
 
-using HTTP, Dates, JSON
-export setup_files
+using HTTP, Gumbo, JSON, Dates
+export setup_files, submit_answer
 
 _base_url(year, day) = "https://adventofcode.com/$year/day/$day"
 
@@ -79,5 +79,13 @@ function setup_files(year, day; force = false)
             write(io, template(year, day))
         end
     end
+end
+
+function submit_answer(year, day, part, answer)
+    data = Dict(
+        "level" => part,
+        "answer" => answer
+    )
+    result = HTTP.post(_base_url(year, day) * "/answer", Dict("User-Agent" => "AdventOfCode.jl"), JSON.json(data), cookies = _get_cookies())
 end
 end
