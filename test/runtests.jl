@@ -1,5 +1,5 @@
-using AdventOfCode, Test, Mocking
-
+using AdventOfCode, Test, Mocking, HTTP
+Mocking.activate()
 @testset "All tests" begin
     AOC = AdventOfCode
     @testset "_is_unlocked" begin
@@ -39,4 +39,31 @@ using AdventOfCode, Test, Mocking
         @info part_2(input)
         """
     end
+    get_patch = @patch HTTP.get(a...; kw...) = (status = 200, body = "TESTDATA")
+    @testset "_download_data" begin
+        apply(get_patch) do
+            @test AdventOfCode._download_data(2019, 1) == "TESTDATA"
+        end
+    end
+    @testset "_setup_data_file" begin
+        apply(get_patch) do
+            AdventOfCode._setup_data_file(2019, 1)
+            @test isdir("data/2019")
+            @test isfile("data/2019/day_1.txt")
+            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+        end
+    end
+    @testset "setup_files" begin
+        apply(get_patch) do
+            AdventOfCode.setup_files(2019, 1, force = true)
+            @test isdir("data/2019")
+            @test isfile("data/2019/day_1.txt")
+            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+            @test isdir("src/2019")
+            @test isfile("src/2019/day_1.jl")
+            @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
+        end
+    end
 end
+rm("data", recursive = true)
+rm("src", recursive = true)

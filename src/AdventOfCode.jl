@@ -1,6 +1,7 @@
 module AdventOfCode
 
 using HTTP, Dates, JSON
+using Mocking
 export setup_files
 
 _base_url(year, day) = "https://adventofcode.com/$year/day/$day"
@@ -13,7 +14,7 @@ function _get_cookies()
 end
 
 function _download_data(year, day)
-    result = HTTP.get(_base_url(year, day) * "/input", cookies = _get_cookies())
+    result = @mock HTTP.get(_base_url(year, day) * "/input", cookies = _get_cookies())
     if result.status == 200
         return result.body
     end
