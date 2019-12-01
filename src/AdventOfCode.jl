@@ -1,6 +1,6 @@
 module AdventOfCode
 
-using HTTP, Dates
+using HTTP, Dates, JSON
 export setup_files
 
 _base_url(year, day) = "https://adventofcode.com/$year/day/$day"
