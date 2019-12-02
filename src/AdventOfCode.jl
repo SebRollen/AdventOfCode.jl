@@ -46,7 +46,7 @@ function _setup_data_file(year, day)
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
-    if is_unlocked(year, day)
+    if _is_unlocked(year, day)
         data = _download_data(year, day)
         mkpath(splitdir(data_path)[1])
         open(data_path, "w+") do io
