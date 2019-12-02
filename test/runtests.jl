@@ -9,11 +9,13 @@ Mocking.activate()
     @testset "_get_cookies" begin
         cleanup = false
         if "AOC_SESSION" ∈ keys(ENV)
-            temp = ENV["AOC_SESSION"]
+            temp = pop!(ENV, "AOC_SESSION")
             cleanup = true
         end
+        @test_throws ErrorException("Session cookie in ENV[\"AOC_SESSION\"] needed to download data.") AOC._get_cookies()
         ENV["AOC_SESSION"] = "COOKIE"
         @test AOC._get_cookies() == Dict("session" => "COOKIE")
+
         if cleanup
             ENV["AOC_SESSION"] = temp
         end
@@ -40,30 +42,42 @@ Mocking.activate()
         """
     end
     get_patch = @patch HTTP.get(a...; kw...) = (status = 200, body = "TESTDATA")
+    get_error_patch = @patch HTTP.get(a...; kw...) = (status = 404, body = "ERROR")
     @testset "_download_data" begin
         apply(get_patch) do
             @test AdventOfCode._download_data(2019, 1) == "TESTDATA"
         end
+        apply(get_error_patch) do
+            @test_throws ErrorException("Unable to download data") AdventOfCode._download_data(2019, 1)
+        end
     end
     @testset "_setup_data_file" begin
         apply(get_patch) do
-            AdventOfCode._setup_data_file(2019, 1)
-            @test isdir("data/2019")
-            @test isfile("data/2019/day_1.txt")
-            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+            try
+                AdventOfCode._setup_data_file(2019, 1)
+                @test isdir("data/2019")
+                @test isfile("data/2019/day_1.txt")
+                @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+            finally
+                rm("data", recursive = true, force = true)
+            end
         end
     end
     @testset "setup_files" begin
         apply(get_patch) do
-            AdventOfCode.setup_files(2019, 1, force = true)
-            @test isdir("data/2019")
-            @test isfile("data/2019/day_1.txt")
-            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
-            @test isdir("src/2019")
-            @test isfile("src/2019/day_1.jl")
-            @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
+            try
+                AdventOfCode.setup_files(2019, 1, force = true)
+                @test isdir("data/2019")
+                @test isfile("data/2019/day_1.txt")
+                @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+                @test isdir("src/2019")
+                @test isfile("src/2019/day_1.jl")
+                @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
+                @test_logs (:warn, r"src/2019/day_1.jl already exists. To overwrite, re-run with `force=true`") AdventOfCode.setup_files(2019, 1, force = false)
+            finally
+                rm("data", recursive = true, force = true)
+                rm("src", recursive = true, force = true)
+            end
         end
     end
 end
-rm("data", recursive = true)
-rm("src", recursive = true)
