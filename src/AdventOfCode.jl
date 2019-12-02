@@ -46,9 +46,7 @@ function _setup_data_file(year, day)
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
-    if current_date <= Date(year, 12, day)
-        @warn "AdventOfCode for year $year, day $day hasn't been unlocked yet."
-    else
+    if _is_unlocked(year, day)
         data = _download_data(year, day)
         mkpath(splitdir(data_path)[1])
         open(data_path, "w+") do io
@@ -61,7 +59,7 @@ function _is_unlocked(year, day)
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
-    is_unlocked = current_date > Date(year, 12, day)
+    is_unlocked = current_date >= Date(year, 12, day)
     if !is_unlocked
         @warn "Advent of Code for year $year and day $day hasn't unlocked yet."
     end
