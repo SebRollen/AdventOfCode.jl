@@ -47,23 +47,30 @@ Mocking.activate()
     end
     @testset "_setup_data_file" begin
         apply(get_patch) do
-            AdventOfCode._setup_data_file(2019, 1)
-            @test isdir("data/2019")
-            @test isfile("data/2019/day_1.txt")
-            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+            try
+                AdventOfCode._setup_data_file(2019, 1)
+                @test isdir("data/2019")
+                @test isfile("data/2019/day_1.txt")
+                @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+            finally
+                rm("data", recursive = true, force = true)
+            end
         end
     end
     @testset "setup_files" begin
         apply(get_patch) do
-            AdventOfCode.setup_files(2019, 1, force = true)
-            @test isdir("data/2019")
-            @test isfile("data/2019/day_1.txt")
-            @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
-            @test isdir("src/2019")
-            @test isfile("src/2019/day_1.jl")
-            @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
+            try
+                AdventOfCode.setup_files(2019, 1, force = true)
+                @test isdir("data/2019")
+                @test isfile("data/2019/day_1.txt")
+                @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+                @test isdir("src/2019")
+                @test isfile("src/2019/day_1.jl")
+                @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
+            finally
+                rm("data", recursive = true, force = true)
+                rm("src", recursive = true, force = true)
+            end
         end
     end
 end
-rm("data", recursive = true)
-rm("src", recursive = true)
