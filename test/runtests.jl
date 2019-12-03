@@ -58,6 +58,7 @@ Mocking.activate()
                 @test isdir("data/2019")
                 @test isfile("data/2019/day_1.txt")
                 @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+                @test_logs (:warn, r"will not redownload") AdventOfCode._setup_data_file(2019, 1)
             finally
                 rm("data", recursive = true, force = true)
             end
@@ -66,14 +67,16 @@ Mocking.activate()
     @testset "setup_files" begin
         apply(get_patch) do
             try
-                AdventOfCode.setup_files(2019, 1, force = true)
+                path = AdventOfCode.setup_files(2019, 1, force = true)
+                dir_path = @__DIR__
+                joinpath(dir_path, "src", "2019", "day_1.jl")
                 @test isdir("data/2019")
                 @test isfile("data/2019/day_1.txt")
                 @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
                 @test isdir("src/2019")
                 @test isfile("src/2019/day_1.jl")
                 @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
-                @test_logs (:warn, r"src/2019/day_1.jl already exists. To overwrite, re-run with `force=true`") AdventOfCode.setup_files(2019, 1, force = false)
+                @test_logs (:warn, r"data/2019/day_1.txt already exists.") (:warn, r"src/2019/day_1.jl already exists.") AdventOfCode.setup_files(2019, 1, force = false)
             finally
                 rm("data", recursive = true, force = true)
                 rm("src", recursive = true, force = true)

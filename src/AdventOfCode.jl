@@ -43,6 +43,10 @@ end
 
 function _setup_data_file(year, day)
     data_path = joinpath(pwd(), "data/$year/day_$day.txt")
+    if isfile(data_path)
+        @warn "$data_path already exists. AdventOfCode.jl will not redownload it"
+        return nothing
+    end
     time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
@@ -69,7 +73,7 @@ end
 function setup_files(year, day; force = false)
     is_unlocked = _is_unlocked(year, day)
     code_path = joinpath(pwd(), "src/$year/day_$day.jl")
-    is_unlocked && _setup_data_file(year, day)
+    is_unlocked &&  _setup_data_file(year, day)
     if !force && isfile(code_path)
         @warn "$code_path already exists. To overwrite, re-run with `force=true`"
     else
@@ -78,5 +82,6 @@ function setup_files(year, day; force = false)
             write(io, _template(year, day))
         end
     end
+    return code_path
 end
 end
