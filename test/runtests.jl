@@ -69,7 +69,7 @@ Mocking.activate()
             try
                 path = AdventOfCode.setup_files(2019, 1, force = true)
                 dir_path = @__DIR__
-                @test path == dir_path * "/src/2019/day_1.jl"
+                joinpath(dir_path, "src", "2019", "day_1.jl")
                 @test isdir("data/2019")
                 @test isfile("data/2019/day_1.txt")
                 @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
