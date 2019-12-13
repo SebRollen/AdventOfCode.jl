@@ -15,7 +15,7 @@ end
 
 `AdventOfCode.jl` exports one function, [`setup_files`](@ref) that lets you get up and
 running with Advent of Code problems by downloading data and setting up your file structure.
-To get started, you need an AdventOfCode cookie. Navigate to [www.adventofcode.com](@ref), log in with
+To get started, you need an AdventOfCode cookie. Navigate to [www.adventofcode.com](https://www.adventofcode.com), log in with
 whichever method you prefer and grab your cookie, using one of [these methods](https://kb.iu.edu/d/ajfi)
 depending on your browser.
 
