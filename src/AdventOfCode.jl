@@ -82,7 +82,7 @@ load on AdventOfCode's servers.
 
 If `year` and `day` are not provided, the setup defaults to today's date.
 """
-function setup_files(year = year(today()), day = day(today()); force = false)
+function setup_files(year, day; force = false)
     is_unlocked = _is_unlocked(year, day)
     code_path = joinpath(pwd(), "src/$year/day_$day.jl")
     is_unlocked &&  _setup_data_file(year, day)
