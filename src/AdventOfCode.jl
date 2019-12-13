@@ -70,6 +70,15 @@ function _is_unlocked(year, day)
     is_unlocked
 end
 
+"""
+    setup_files(year, day; force = false)
+
+Downloads the input file for the specified year and date and stores that file in
+`data/{year}/day_{day}.txt`. Also sets up a template file in `src/{year}/day_{day}.jl` for
+your script. `force=true` will recreate the `src` file even if it already exists. The `data`
+file will not be re-downloaded even with `force=true` since it's a static file and to reduce
+load on AdventOfCode's servers.
+"""
 function setup_files(year, day; force = false)
     is_unlocked = _is_unlocked(year, day)
     code_path = joinpath(pwd(), "src/$year/day_$day.jl")
