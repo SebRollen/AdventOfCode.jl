@@ -72,14 +72,17 @@ end
 
 """
     setup_files(year, day; force = false)
+    setup_files(; force = false)
 
 Downloads the input file for the specified year and date and stores that file in
 `data/{year}/day_{day}.txt`. Also sets up a template file in `src/{year}/day_{day}.jl` for
 your script. `force=true` will recreate the `src` file even if it already exists. The `data`
 file will not be re-downloaded even with `force=true` since it's a static file and to reduce
 load on AdventOfCode's servers.
+
+If `year` and `day` are not provided, the setup defaults to today's date.
 """
-function setup_files(year, day; force = false)
+function setup_files(year = year(today()), day = day(today()); force = false)
     is_unlocked = _is_unlocked(year, day)
     code_path = joinpath(pwd(), "src/$year/day_$day.jl")
     is_unlocked &&  _setup_data_file(year, day)
@@ -93,4 +96,7 @@ function setup_files(year, day; force = false)
     end
     return code_path
 end
+
+setup_files(; force = false) = setup_files(year(today()), day(today()), force = force)
+
 end
