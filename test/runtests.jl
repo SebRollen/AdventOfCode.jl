@@ -84,25 +84,5 @@ Mocking.activate()
                 end
             end
         end
-        @testset "works for convenience method" begin
-            apply(get_patch) do
-                try
-                    year, day = Dates.year(today()), Dates.day(today())
-                    path = AdventOfCode.setup_files(force = true)
-                    dir_path = @__DIR__
-                    joinpath(dir_path, string(year), "src", "day_$day.jl") 
-                    @test isdir("$year/data")
-                    @test isfile("$year/data/day_$day.txt")
-                    @test readlines("$year/data/day_$day.txt") == ["TESTDATA"]
-                    @test isdir("$year/src")
-                    @test isfile("$year/src/day_$day.jl")
-                    @test String(read("$year/src/day_$day.jl")) == AdventOfCode._template(year, day)
-                    @test_logs (:warn, r"txt already exists.") (:warn, r"jl already exists.") AdventOfCode.setup_files(year, day, force = false)
-                finally
-                    rm("data", recursive = true, force = true)
-                    rm("src", recursive = true, force = true)
-                end
-            end
-        end
     end
 end
