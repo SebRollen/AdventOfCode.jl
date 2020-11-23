@@ -28,7 +28,7 @@ Mocking.activate()
         # https://adventofcode.com/2019/day/1
         using AdventOfCode
 
-        input = readlines("data/2019/day_1.txt")
+        input = readlines("2019/data/day_1.txt")
 
         function part_1(input)
             nothing
@@ -55,9 +55,9 @@ Mocking.activate()
         apply(get_patch) do
             try
                 AdventOfCode._setup_data_file(2019, 1)
-                @test isdir("data/2019")
-                @test isfile("data/2019/day_1.txt")
-                @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
+                @test isdir("2019/data/")
+                @test isfile("2019/data/day_1.txt")
+                @test readlines("2019/data/day_1.txt") == ["TESTDATA"]
                 @test_logs (:warn, r"will not redownload") AdventOfCode._setup_data_file(2019, 1)
             finally
                 rm("data", recursive = true, force = true)
@@ -70,14 +70,14 @@ Mocking.activate()
                 try
                     path = AdventOfCode.setup_files(2019, 1, force = true)
                     dir_path = @__DIR__
-                    joinpath(dir_path, "src", "2019", "day_1.jl")
-                    @test isdir("data/2019")
-                    @test isfile("data/2019/day_1.txt")
-                    @test readlines("data/2019/day_1.txt") == ["TESTDATA"]
-                    @test isdir("src/2019")
-                    @test isfile("src/2019/day_1.jl")
-                    @test String(read("src/2019/day_1.jl")) == AdventOfCode._template(2019, 1)
-                    @test_logs (:warn, r"data/2019/day_1.txt already exists.") (:warn, r"src/2019/day_1.jl already exists.") AdventOfCode.setup_files(2019, 1, force = false)
+                    joinpath(dir_path, "2019", "src", "day_1.jl")
+                    @test isdir("2019/data/")
+                    @test isfile("2019/data/day_1.txt")
+                    @test readlines("2019/data/day_1.txt") == ["TESTDATA"]
+                    @test isdir("2019/src")
+                    @test isfile("2019/src/day_1.jl")
+                    @test String(read("2019/src/day_1.jl")) == AdventOfCode._template(2019, 1)
+                    @test_logs (:warn, r"2019/data/day_1.txt already exists.") (:warn, r"2019/src/day_1.jl already exists.") AdventOfCode.setup_files(2019, 1, force = false)
                 finally
                     rm("data", recursive = true, force = true)
                     rm("src", recursive = true, force = true)
@@ -90,13 +90,13 @@ Mocking.activate()
                     year, day = Dates.year(today()), Dates.day(today())
                     path = AdventOfCode.setup_files(force = true)
                     dir_path = @__DIR__
-                    joinpath(dir_path, "src", string(year), "day_$day.jl")
-                    @test isdir("data/$year")
-                    @test isfile("data/$year/day_$day.txt")
-                    @test readlines("data/$year/day_$day.txt") == ["TESTDATA"]
-                    @test isdir("src/$year")
-                    @test isfile("src/$year/day_$day.jl")
-                    @test String(read("src/$year/day_$day.jl")) == AdventOfCode._template(year, day)
+                    joinpath(dir_path, string(year), "src", "day_$day.jl") 
+                    @test isdir("$year/data")
+                    @test isfile("$year/data/day_$day.txt")
+                    @test readlines("$year/data/day_$day.txt") == ["TESTDATA"]
+                    @test isdir("$year/src")
+                    @test isfile("$year/src/day_$day.jl")
+                    @test String(read("$year/src/day_$day.jl")) == AdventOfCode._template(year, day)
                     @test_logs (:warn, r"txt already exists.") (:warn, r"jl already exists.") AdventOfCode.setup_files(year, day, force = false)
                 finally
                     rm("data", recursive = true, force = true)
