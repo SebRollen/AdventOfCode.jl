@@ -25,7 +25,6 @@ function _template(year, day; include_year = true)
     rel_path = "data/day_$day.txt"
     include_year && (rel_path = joinpath(string(year), rel_path))
     
-    data_path = normpath(pwd() * rel_path) # this isn't being used?
     """
     # $(_base_url(year, day))
     using AdventOfCode
@@ -94,20 +93,19 @@ function setup_files(year, day; force = false, include_year = true)
     is_unlocked = _is_unlocked(year, day)
     rel_path = "src/day_$day.jl"
     include_year && (rel_path = joinpath(string(year), rel_path))
-    
     code_path = joinpath(pwd(), rel_path)
-    is_unlocked &&  _setup_data_file(year, day)
+    is_unlocked &&  _setup_data_file(year, day, include_year = include_year)
     if !force && isfile(code_path)
         @warn "$code_path already exists. To overwrite, re-run with `force=true`"
     else
         mkpath(splitdir(code_path)[1])
         open(code_path, "w+") do io
-            write(io, _template(year, day))
+            write(io, _template(year, day, include_year=include_year))
         end
     end
     return code_path
 end
 
-setup_files(; force = false) = setup_files(year(today()), day(today()), force = force)
+setup_files(; force = false, include_year = true) = setup_files(year(today()), day(today()), force = force, include_year = include_year)
 
 end
