@@ -22,7 +22,7 @@ function _download_data(year, day)
 end
 
 function _template(year, day; include_year = true)
-    rel_path = "data/day_$day.txt"
+    rel_path = joinpath("data", "day_$day.txt")
     include_year && (rel_path = joinpath(string(year), rel_path))
     
     """
@@ -44,7 +44,7 @@ function _template(year, day; include_year = true)
 end
 
 function _setup_data_file(year, day; include_year = true)
-    rel_path = "data/day_$day.txt"
+    rel_path = joinpath("data", "day_$day.txt")
     include_year && (rel_path = joinpath(string(year), rel_path))
 
     data_path = joinpath(pwd(), rel_path)
@@ -91,7 +91,7 @@ If `year` and `day` are not provided, the setup defaults to today's date.
 """
 function setup_files(year, day; force = false, include_year = true)
     is_unlocked = _is_unlocked(year, day)
-    rel_path = "src/day_$day.jl"
+    rel_path = joinpath("src", "day_$day.jl")
     include_year && (rel_path = joinpath(string(year), rel_path))
     code_path = joinpath(pwd(), rel_path)
     is_unlocked &&  _setup_data_file(year, day, include_year = include_year)
