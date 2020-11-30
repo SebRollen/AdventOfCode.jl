@@ -86,7 +86,7 @@ Mocking.activate()
                             @test isdir(src_path)
                             @test isfile(joinpath(src_path, "day_1.jl"))
                             @test String(read(joinpath(src_path, "day_1.jl"))) == AOC._template(2019, 1,include_year = include_year)
-                            @test_logs (:warn, Regex("$(joinpath(data_path, "day_1.txt")) already exists.")) (:warn, Regex("$(joinpath(src_path, "day_1.jl")) already exists.")) AOC.setup_files(2019, 1, force = false, include_year = include_year)
+                            @test_logs (:warn, Regex("day_1.txt already exists.")) (:warn, Regex("day_1.jl already exists.")) AOC.setup_files(2019, 1, force = false, include_year = include_year)
                         finally
                             if include_year
                                 rm(base_path, recursive = true, force = true)
