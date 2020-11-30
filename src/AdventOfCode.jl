@@ -21,13 +21,15 @@ function _download_data(year, day)
     error("Unable to download data")
 end
 
-function _template(year, day)
-    data_path = normpath(pwd() * "data/$year/day_$day.txt")
+function _template(year, day; include_year = true)
+    rel_path = joinpath("data", "day_$day.txt")
+    include_year && (rel_path = joinpath(string(year), rel_path))
+    
     """
     # $(_base_url(year, day))
     using AdventOfCode
 
-    input = readlines("data/$year/day_$day.txt")
+    input = readlines("$rel_path")
 
     function part_1(input)
         nothing
@@ -41,8 +43,11 @@ function _template(year, day)
     """
 end
 
-function _setup_data_file(year, day)
-    data_path = joinpath(pwd(), "data/$year/day_$day.txt")
+function _setup_data_file(year, day; include_year = true)
+    rel_path = joinpath("data", "day_$day.txt")
+    include_year && (rel_path = joinpath(string(year), rel_path))
+
+    data_path = joinpath(pwd(), rel_path)
     if isfile(data_path)
         @warn "$data_path already exists. AdventOfCode.jl will not redownload it"
         return nothing
@@ -71,32 +76,36 @@ function _is_unlocked(year, day)
 end
 
 """
-    setup_files(year, day; force = false)
-    setup_files(; force = false)
+    setup_files(year, day; force = false, include_year = true)
+    setup_files(; force = false, include_year = true)
 
 Downloads the input file for the specified year and date and stores that file in
-`data/{year}/day_{day}.txt`. Also sets up a template file in `src/{year}/day_{day}.jl` for
-your script. `force=true` will recreate the `src` file even if it already exists. The `data`
-file will not be re-downloaded even with `force=true` since it's a static file and to reduce
-load on AdventOfCode's servers.
+`{year}/data/day_{day}.txt` or `data/day_{day}.txt` if `include_year` is set to `false`.
+Also sets up a template file in `{year}/src/day_{day}.jl` for your script
+(`src/day_{day}.jl` if `include_year` is set to `false`). 
+`force=true` will recreate the `src` file even if it already exists. 
+The `data` file will not be re-downloaded even with `force=true` 
+since it's a static file and to reduce load on AdventOfCode's servers.
 
 If `year` and `day` are not provided, the setup defaults to today's date.
 """
-function setup_files(year, day; force = false)
+function setup_files(year, day; force = false, include_year = true)
     is_unlocked = _is_unlocked(year, day)
-    code_path = joinpath(pwd(), "src/$year/day_$day.jl")
-    is_unlocked &&  _setup_data_file(year, day)
+    rel_path = joinpath("src", "day_$day.jl")
+    include_year && (rel_path = joinpath(string(year), rel_path))
+    code_path = joinpath(pwd(), rel_path)
+    is_unlocked &&  _setup_data_file(year, day, include_year = include_year)
     if !force && isfile(code_path)
         @warn "$code_path already exists. To overwrite, re-run with `force=true`"
     else
         mkpath(splitdir(code_path)[1])
         open(code_path, "w+") do io
-            write(io, _template(year, day))
+            write(io, _template(year, day, include_year=include_year))
         end
     end
     return code_path
 end
 
-setup_files(; force = false) = setup_files(year(today()), day(today()), force = force)
+setup_files(; force = false, include_year = true) = setup_files(year(today()), day(today()), force = force, include_year = include_year)
 
 end
