@@ -52,8 +52,6 @@ function _setup_data_file(year, day; include_year = true)
         @warn "$data_path already exists. AdventOfCode.jl will not redownload it"
         return nothing
     end
-    current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
-    current_date = Date(current_datetime[1:10])
     if _is_unlocked(year, day)
         data = _download_data(year, day)
         mkpath(splitdir(data_path)[1])
