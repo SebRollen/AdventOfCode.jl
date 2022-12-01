@@ -52,7 +52,6 @@ function _setup_data_file(year, day; include_year = true)
         @warn "$data_path already exists. AdventOfCode.jl will not redownload it"
         return nothing
     end
-    time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
     current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
     current_date = Date(current_datetime[1:10])
     if _is_unlocked(year, day)
@@ -65,8 +64,8 @@ function _setup_data_file(year, day; include_year = true)
 end
 
 function _is_unlocked(year, day)
-    time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
-    current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
+    time_req = HTTP.get("http://worldtimeapi.org/api/timezone/EST")
+    current_datetime = JSON.parse(String(time_req.body))["datetime"]
     current_date = Date(current_datetime[1:10])
     is_unlocked = current_date >= Date(year, 12, day)
     if !is_unlocked
