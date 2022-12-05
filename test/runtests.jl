@@ -45,7 +45,6 @@ Mocking.activate()
             @testset "_template" begin
                 @test AOC._template(2019, 1; include_year = include_year) == """
                 # https://adventofcode.com/2019/day/1
-                using AdventOfCode
 
                 input = readlines("$(relpath(joinpath(data_path, "day_1.txt")))")
 
