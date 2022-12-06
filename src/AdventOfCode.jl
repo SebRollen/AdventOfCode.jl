@@ -27,7 +27,6 @@ function _template(year, day; include_year = true)
     
     """
     # $(_base_url(year, day))
-    using AdventOfCode
 
     input = readlines("$rel_path")
 
