@@ -39,6 +39,9 @@ function _template(year, day; include_year = true)
         nothing
     end
     @info part_2(input)
+
+    test = split(\"\"\"
+    \"\"\", \"\\n\") # paste testdata here
     """
 end
 
