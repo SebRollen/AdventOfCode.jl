@@ -1,6 +1,6 @@
 module AdventOfCode
 
-using HTTP, Dates, JSON
+using HTTP, Dates, JSON, TimeZones
 using Mocking
 export setup_files
 
@@ -61,9 +61,8 @@ function _setup_data_file(year, day; include_year = true)
 end
 
 function _is_unlocked(year, day)
-    time_req = HTTP.get("https://worldtimeapi.org/api/timezone/EST")
-    current_datetime = JSON.parse(String(time_req.body))["datetime"]
-    current_date = Date(current_datetime[1:10])
+    current_datetime = now(TimeZone("America/Panama"))
+    current_date = Date(current_datetime)
     is_unlocked = current_date >= Date(year, 12, day)
     if !is_unlocked
         @warn "Advent of Code for year $year and day $day hasn't unlocked yet."
